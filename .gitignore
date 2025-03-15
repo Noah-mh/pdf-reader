@@ -1,0 +1,5 @@
+*.xlsx
+*.pdf
+*.txt
+
+/node_modules
