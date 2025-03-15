@@ -37,9 +37,12 @@ pnpm start
   - Withdrawal amount
   - Deposit amount
   - Balance
+  - Transaction category
 - Handles multi-page DBS/POSB bank statements
 - Processes multi-line transaction entries
 - Captures complete recipient information across multiple lines
+- Automatically categorizes transactions based on recipient information and description
+- Provides category-based summaries showing totals for each transaction type
 - Preserves important transaction details like:
   - Recipient information (e.g., "TO: YOU TECHNOLOGIES GROUP (SG) PL")
   - Merchant details for debit card transactions
@@ -76,17 +79,41 @@ The script uses several specialized functions to process the PDF content:
    - Uses balance changes to verify and correct withdrawal/deposit amounts
    - Resolves ambiguities in transaction categorization
 
-4. `cleanupDescription`: Improves description readability
+4. `cleanupDescription`: Improves description readability and categorizes transactions
 
    - Preserves important recipient/sender information
    - Extracts merchant details for debit card transactions
    - Handles different transaction types (FAST/PAYNOW, debit card, GIRO, Salary, etc.)
    - Extracts reference numbers, card details, and transaction IDs
    - Formats descriptions for better readability
+   - Assigns appropriate categories based on transaction details
 
 5. `addSummaryRow`: Adds totals for withdrawals and deposits
    - Calculates total amounts
+   - Provides category-based subtotals
    - Adds a summary row at the end of the data
+
+## Transaction Categories
+
+The script automatically categorizes transactions into the following types:
+
+- **Dining**: Restaurants, cafes, food outlets, bakeries
+- **Groceries**: Supermarkets, grocery stores, NTUC FairPrice, Cold Storage
+- **Transport**: Grab, taxis, MRT, bus services, Gojek
+- **Shopping**: Amazon, Lazada, Shopee, retail stores
+- **Bills**: Utility bills, service payments
+- **Telecommunications**: Phone bills, internet services
+- **Utilities**: Power, water, gas bills
+- **Housing**: Rent, property-related payments
+- **Insurance**: Insurance premiums and payments
+- **Salary**: Income from employment
+- **Investment**: Securities, trading, investment platforms
+- **Investment Income**: Dividends, interest from investments
+- **Cash Withdrawal**: ATM withdrawals
+- **Fees**: Bank fees, service charges
+- **Transfer**: General fund transfers
+- **Income**: Other income sources
+- **Expense**: General expenses
 
 ## Transaction Type Handling
 
@@ -97,28 +124,34 @@ The script is optimized to handle different types of transactions:
 - Extracts merchant name and location
 - Preserves card number information
 - Captures transaction date
+- Categorizes based on merchant information
 
 ### PAYNOW/FAST Transfers
 
 - Captures recipient name (TO: field)
 - Preserves transfer numbers
 - Extracts reference information
+- Categorizes based on recipient details
 
 ### GIRO and Salary Transactions
 
 - Extracts company name information
 - Preserves payment details and references
 - Formats information in a clear, readable structure
+- Categorizes based on company name and payment details
 
 ### Other Transactions
 
 - Preserves sender information (FROM: field)
 - Captures any reference numbers
 - Maintains other transaction-specific details
+- Assigns appropriate categories based on available information
 
 ## Customization
 
 If you're using a different bank's statement format, you may need to customize these functions to match your specific format. The script includes an alternative parser (`processStatementDataAlternative`) that can be modified for other bank statement formats.
+
+You can also customize the categorization logic in the `cleanupDescription` function to match your specific needs and add additional categories.
 
 ## Troubleshooting
 

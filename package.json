@@ -4,7 +4,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "ts-node pdf-to-excel.ts"
+    "start": "ts-node pdf-to-excel.ts",
+    "start:citi": "ts-node citi-to-excel.ts"
   },
   "keywords": [],
   "author": "",
