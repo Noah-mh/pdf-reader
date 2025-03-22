@@ -1244,10 +1244,59 @@ function determineCategory(
   }
 }
 
-// Main execution
-const pdfPath = path.resolve(__dirname, "bank-statement.pdf");
-const excelPath = path.resolve(__dirname, "bank-statement.xlsx");
+// New function to process all PDF files in a directory
+async function processAllPdfsInDirectory(
+  inputDirectory: string,
+  outputDirectory: string
+): Promise<void> {
+  try {
+    // Ensure input directory exists
+    if (!fs.existsSync(inputDirectory)) {
+      console.error(`Input directory "${inputDirectory}" does not exist.`);
+      return;
+    }
 
-convertPdfToExcel(pdfPath, excelPath)
-  .then(() => console.log("Conversion completed successfully"))
-  .catch((err) => console.error("Conversion failed:", err));
+    // Create output directory if it doesn't exist
+    if (!fs.existsSync(outputDirectory)) {
+      console.log(`Creating output directory: ${outputDirectory}`);
+      fs.mkdirSync(outputDirectory, { recursive: true });
+    }
+
+    // Get all PDF files in the input directory
+    const files = fs
+      .readdirSync(inputDirectory)
+      .filter((file) => file.toLowerCase().endsWith(".pdf"));
+
+    console.log(`Found ${files.length} PDF files in ${inputDirectory}`);
+
+    if (files.length === 0) {
+      console.log("No PDF files found to process.");
+      return;
+    }
+
+    // Process each PDF file
+    for (const file of files) {
+      const pdfPath = path.join(inputDirectory, file);
+      const filename = path.parse(file).name;
+      const excelPath = path.join(outputDirectory, `${filename}.xlsx`);
+
+      console.log(`\nProcessing: ${file}`);
+      console.log(`Output will be saved to: ${excelPath}`);
+
+      await convertPdfToExcel(pdfPath, excelPath);
+      console.log(`Conversion of ${file} completed successfully`);
+    }
+
+    console.log("\nAll PDF files processed successfully");
+  } catch (error) {
+    console.error("Error processing PDF files:", error);
+  }
+}
+
+// New main execution
+const inputDirectory = path.resolve(__dirname, "estatement/dbs");
+const outputDirectory = path.resolve(__dirname, "excels/dbs");
+
+processAllPdfsInDirectory(inputDirectory, outputDirectory)
+  .then(() => console.log("All conversions completed"))
+  .catch((err) => console.error("Process failed:", err));
