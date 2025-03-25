@@ -1,5 +1,5 @@
-import * as fs from "fs";
-import * as path from "path";
+import * as fs from "node:fs";
+import * as path from "node:path";
 import * as XLSX from "xlsx";
 import pdfParse from "pdf-parse";
 
@@ -883,8 +883,12 @@ function processStatementDataAlternative(textContent: string): any[] {
 }
 
 // Main execution
-const pdfPath = path.resolve(__dirname, "citi-bank-estatement.pdf");
-const excelPath = path.resolve(__dirname, "citi-bank-estatement.xlsx");
+const inputDirectory = path.resolve(__dirname, "e-statement/citi");
+const outputDirectory = path.resolve(__dirname, "excels/citi");
+
+processAllPdfsInDirectory(inputDirectory, outputDirectory)
+  .then(() => console.log("All conversions completed"))
+  .catch((err) => console.error("Process failed:", err));
 
 // Add a direct text parsing function to extract transactions from raw text
 function extractTransactionsFromRawText(textContent: string): any[] {
@@ -1109,6 +1113,51 @@ function extractTransactionsFromRawText(textContent: string): any[] {
   return uniqueTransactions;
 }
 
-convertCitiPdfToExcel(pdfPath, excelPath)
-  .then(() => console.log("Conversion completed successfully"))
-  .catch((err) => console.error("Conversion failed:", err));
+// New function to process all PDF files in a directory
+async function processAllPdfsInDirectory(
+  inputDirectory: string,
+  outputDirectory: string
+): Promise<void> {
+  try {
+    // Ensure input directory exists
+    if (!fs.existsSync(inputDirectory)) {
+      console.error(`Input directory "${inputDirectory}" does not exist.`);
+      return;
+    }
+
+    // Create output directory if it doesn't exist
+    if (!fs.existsSync(outputDirectory)) {
+      console.log(`Creating output directory: ${outputDirectory}`);
+      fs.mkdirSync(outputDirectory, { recursive: true });
+    }
+
+    // Get all PDF files in the input directory
+    const files = fs
+      .readdirSync(inputDirectory)
+      .filter((file) => file.toLowerCase().endsWith(".pdf"));
+
+    console.log(`Found ${files.length} PDF files in ${inputDirectory}`);
+
+    if (files.length === 0) {
+      console.log("No PDF files found to process.");
+      return;
+    }
+
+    // Process each PDF file
+    for (const file of files) {
+      const pdfPath = path.join(inputDirectory, file);
+      const filename = path.parse(file).name;
+      const excelPath = path.join(outputDirectory, `${filename}.xlsx`);
+
+      console.log(`\nProcessing: ${file}`);
+      console.log(`Output will be saved to: ${excelPath}`);
+
+      await convertCitiPdfToExcel(pdfPath, excelPath);
+      console.log(`Conversion of ${file} completed successfully`);
+    }
+
+    console.log("\nAll PDF files processed successfully");
+  } catch (error) {
+    console.error("Error processing PDF files:", error);
+  }
+}

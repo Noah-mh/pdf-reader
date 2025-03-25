@@ -1294,7 +1294,7 @@ async function processAllPdfsInDirectory(
 }
 
 // New main execution
-const inputDirectory = path.resolve(__dirname, "estatement/dbs");
+const inputDirectory = path.resolve(__dirname, "e-statement/dbs");
 const outputDirectory = path.resolve(__dirname, "excels/dbs");
 
 processAllPdfsInDirectory(inputDirectory, outputDirectory)

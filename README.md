@@ -18,7 +18,7 @@ pnpm install
 
 ## Usage
 
-1. Place your bank statement PDF file in the root directory and name it `bank-statement.pdf`
+1. Place your bank statement PDF file in the in e-statement folder and follow by the bank name like e-statement/dbs.
 2. Run the script:
 
 ```bash
